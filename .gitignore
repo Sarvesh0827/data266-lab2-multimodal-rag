@@ -1,3 +1,17 @@
 .env
 .env.*
 !.env.example
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+artifacts/
+rag_index/
+*.pt
+*.bin
+.DS_Store
+DATA_66_Lab__Part1_export.zip
+data_export/
+.chroma/
+runs/

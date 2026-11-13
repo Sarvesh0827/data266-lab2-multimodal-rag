@@ -1,0 +1,15 @@
+pymupdf
+pandas
+rank-bm25
+chromadb
+sentence-transformers
+pillow
+open-clip-torch
+torch
+torchvision
+regex
+tqdm
+rapidfuzz
+transformers
+accelerate
+sentencepiece
