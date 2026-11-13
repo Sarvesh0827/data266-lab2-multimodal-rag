@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pymupdf
 
-from rag.config import ARTIFACTS, doc_paths, load_manifest, trust_map
+import rag.config as config
+from rag.config import doc_paths, load_manifest, trust_map
 
 LABEL_RE = re.compile(
     r"(?P<label>(Figure|Table)\s+(([12]|[A-C])-\d+(?:\s*\(corrected\))?))",
@@ -83,10 +84,10 @@ def _caption_near(text: str, label: str) -> str:
 
 
 def extract_knowledge_base(force: bool = False) -> tuple[list[TextChunk], list[VisualAsset]]:
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    figures_dir = ARTIFACTS / "figures"
+    config.ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    figures_dir = config.ARTIFACTS / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
-    meta_path = ARTIFACTS / "ingest_meta.json"
+    meta_path = config.ARTIFACTS / "ingest_meta.json"
 
     if meta_path.exists() and not force:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -194,7 +195,7 @@ def extract_knowledge_base(force: bool = False) -> tuple[list[TextChunk], list[V
         "label_index": label_index,
     }
     meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
-    (ARTIFACTS / "label_index.json").write_text(json.dumps(label_index, indent=2), encoding="utf-8")
+    (config.ARTIFACTS / "label_index.json").write_text(json.dumps(label_index, indent=2), encoding="utf-8")
     return chunks, assets
 
 

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from rank_bm25 import BM25Okapi
 
-from rag.config import ARTIFACTS
+import rag.config as config
 from rag.extract_kb import build_kb
 from rag.memory import ConversationMemory
 from rag.retrieve import mentioned_labels
@@ -25,7 +25,7 @@ TYPE_RANK = {"revision": 4, "outturn": 3, "estimate": 2, "forecast": 1, "index":
 
 
 def _load_kb() -> dict:
-    path = ARTIFACTS / "kb_facts.json"
+    path = config.ARTIFACTS / "kb_facts.json"
     if not path.exists():
         return build_kb(force=True, do_ocr=True)
     return json.loads(path.read_text(encoding="utf-8"))

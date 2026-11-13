@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pandas as pd
 
+import rag.config as config
 from rag.answer_engine import StructuredAnswerer
-from rag.config import ARTIFACTS, DATA_DIR, OUTPUT_DIR
 from rag.extract_kb import build_kb
 from rag.memory import MemoryBank
 
@@ -24,8 +24,8 @@ COLS = ["id", "conversation_id", "question_id", "answer", "figure_references", "
 def run(questions_path: Path | None = None, out_path: Path | None = None, rebuild_index: bool = False) -> Path:
     # rebuild_index kept for CLI compatibility with Kaggle notebook; structured path does not need it.
     _ = rebuild_index
-    qpath = questions_path or (DATA_DIR / "Questions.csv")
-    out = out_path or (OUTPUT_DIR / "submission.csv")
+    qpath = questions_path or (config.DATA_DIR / "Questions.csv")
+    out = out_path or (config.OUTPUT_DIR / "submission.csv")
 
     questions = pd.read_csv(qpath, dtype=str, keep_default_na=False)
     print(f"Loaded {len(questions)} questions from {qpath}", flush=True)
@@ -33,7 +33,7 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
     print("Building auto-extracted KB (tables + OCR)...", flush=True)
     # Reuse figure OCR if present; always refresh table/claim facts from PDFs.
     prev_figs = []
-    prev = ARTIFACTS / "kb_facts.json"
+    prev = config.ARTIFACTS / "kb_facts.json"
     if prev.exists():
         prev_figs = json.loads(prev.read_text(encoding="utf-8")).get("figures", [])
     do_ocr = len(prev_figs) == 0
@@ -61,7 +61,7 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
             kb["numeric_facts"] = [asdict(f) for f in facts]
         except Exception as e:
             print("Bar-chart OCR enrich skipped:", e, flush=True)
-        (ARTIFACTS / "kb_facts.json").write_text(json.dumps(kb, indent=2), encoding="utf-8")
+        (config.ARTIFACTS / "kb_facts.json").write_text(json.dumps(kb, indent=2), encoding="utf-8")
 
     answerer = StructuredAnswerer()
     memory_bank = MemoryBank()

@@ -7,7 +7,8 @@ from dataclasses import asdict, dataclass
 
 import pymupdf
 
-from rag.config import ARTIFACTS, doc_paths, load_manifest, trust_map
+import rag.config as config
+from rag.config import doc_paths, load_manifest, trust_map
 from rag.ingest import _page_trust, extract_knowledge_base
 
 NUM = r"[-+]?(?:\d+\.\d+|\d+)"
@@ -884,8 +885,8 @@ def ocr_figures(assets, reader) -> list[FigureRecord]:
 
 
 def build_kb(force: bool = False, do_ocr: bool = True) -> dict:
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    out_path = ARTIFACTS / "kb_facts.json"
+    config.ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    out_path = config.ARTIFACTS / "kb_facts.json"
     if out_path.exists() and not force:
         return json.loads(out_path.read_text(encoding="utf-8"))
 
