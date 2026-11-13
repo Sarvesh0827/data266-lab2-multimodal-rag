@@ -122,11 +122,20 @@ class HybridRetriever:
         # Force exact figure/table mentions
         for label in forced_labels:
             key = label.lower()
-            asset_ids = self.index.label_index.get(key, [])
-            # also try without corrected / with corrected
-            if not asset_ids and "(corrected)" not in key:
-                asset_ids = self.index.label_index.get(key + " (corrected)".lower(), [])
+            asset_ids = list(self.index.label_index.get(key, []))
+            # Prefer corrected variant when question did not forbid it and one exists
+            if "(corrected)" not in key:
+                corr = self.index.label_index.get(f"{key} (corrected)", [])
+                if corr:
+                    asset_ids = list(corr) + asset_ids
+            # Deduplicate while preserving order
+            seen_aids = set()
+            ordered_aids = []
             for aid in asset_ids:
+                if aid not in seen_aids:
+                    seen_aids.add(aid)
+                    ordered_aids.append(aid)
+            for aid in ordered_aids:
                 asset = self.index.assets_by_id.get(aid)
                 if not asset or asset.trust_level == "low":
                     continue

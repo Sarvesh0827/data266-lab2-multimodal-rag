@@ -145,7 +145,7 @@ def extract_knowledge_base(force: bool = False) -> tuple[list[TextChunk], list[V
                         safe = re.sub(r"[^\w\-]+", "_", lb)
                         img_path = figures_dir / f"{doc_id}_p{page_no}_{safe}.png"
                         pix.save(str(img_path))
-                        aid = f"{doc_id}:{lb}"
+                        aid = f"{doc_id}:p{page_no}:{lb}"
                         kind = "table" if lb.lower().startswith("table") else "figure"
                         asset = VisualAsset(
                             asset_id=aid,
