@@ -8,21 +8,43 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def resolve_data_dir() -> Path:
-    """Prefer local data_export; else first Kaggle input folder with Questions.csv."""
+    """Resolve Questions.csv / PDF folder.
+
+    Priority: DATA_DIR env → local data_export → Kaggle /kaggle/input search.
+    """
+    env = os.environ.get("DATA_DIR")
+    if env and (Path(env) / "Questions.csv").exists():
+        return Path(env)
+
     local = ROOT / "data_export"
     if (local / "Questions.csv").exists():
         return local
+
     kaggle = Path("/kaggle/input")
     if kaggle.exists():
         for p in kaggle.rglob("Questions.csv"):
             return p.parent
-    env = os.environ.get("DATA_DIR")
-    if env:
-        return Path(env)
+
     raise FileNotFoundError("Could not locate Questions.csv / knowledge-base data dir")
 
 
-DATA_DIR = resolve_data_dir()
+def refresh_paths() -> None:
+    """Re-bind module paths after notebook sets DATA_DIR / ARTIFACTS_DIR / OUTPUT_DIR."""
+    global DATA_DIR, ARTIFACTS, INDEX_DIR, OUTPUT_DIR
+    DATA_DIR = resolve_data_dir()
+    ARTIFACTS = Path(os.environ.get("ARTIFACTS_DIR", ROOT / "artifacts"))
+    INDEX_DIR = Path(os.environ.get("INDEX_DIR", ROOT / "rag_index"))
+    OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", ROOT))
+    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+try:
+    DATA_DIR = resolve_data_dir()
+except FileNotFoundError:
+    # Allow importing the package before data is attached (notebook setup cells).
+    DATA_DIR = Path(os.environ.get("DATA_DIR", ROOT / "data_export"))
+
 ARTIFACTS = Path(os.environ.get("ARTIFACTS_DIR", ROOT / "artifacts"))
 INDEX_DIR = Path(os.environ.get("INDEX_DIR", ROOT / "rag_index"))
 OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", ROOT))
