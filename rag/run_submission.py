@@ -31,14 +31,29 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
     print(f"Loaded {len(questions)} questions from {qpath}", flush=True)
 
     print("Building auto-extracted KB (tables + OCR)...", flush=True)
-    # Reuse figure OCR if present; always refresh table facts from PDFs.
+    # Reuse figure OCR if present; always refresh table/claim facts from PDFs.
     prev_figs = []
     prev = ARTIFACTS / "kb_facts.json"
     if prev.exists():
         prev_figs = json.loads(prev.read_text(encoding="utf-8")).get("figures", [])
-    kb = build_kb(force=True, do_ocr=(len(prev_figs) == 0))
+    do_ocr = len(prev_figs) == 0
+    kb = build_kb(force=True, do_ocr=do_ocr)
     if prev_figs and not kb.get("figures"):
         kb["figures"] = prev_figs
+        # Still parse A-6/A-7 bar labels when reusing cached figure OCR blobs.
+        try:
+            import easyocr
+            from dataclasses import asdict
+            from rag.extract_kb import NumericFact, enrich_euro_area_bar_facts
+            from rag.ingest import extract_knowledge_base
+
+            reader = easyocr.Reader(["en"], gpu=False, verbose=False)
+            _, assets = extract_knowledge_base(force=False)
+            facts = [NumericFact(**f) for f in kb["numeric_facts"]]
+            enrich_euro_area_bar_facts(facts, assets, reader)
+            kb["numeric_facts"] = [asdict(f) for f in facts]
+        except Exception as e:
+            print("Bar-chart OCR enrich skipped:", e, flush=True)
         (ARTIFACTS / "kb_facts.json").write_text(json.dumps(kb, indent=2), encoding="utf-8")
 
     answerer = StructuredAnswerer()

@@ -420,6 +420,241 @@ def extract_all_tables(doc_id, page, text, trust, facts):
         parse_doc1_averages_and_claims(doc_id, page, text, trust, facts)
 
 
+def extract_prose_claims(doc_id, page, text, trust, claims: list[dict]) -> None:
+    """Auto-extract short grounded claims from PDF prose (not hand-authored answers)."""
+    if trust == "low":
+        return
+    text = _normalize_text(text)
+    patterns = [
+        (
+            "lehman_bankruptcy",
+            r"(On September 15,? 2008,? a major bank,\s*Lehman Brothers,? went bankrupt\.)",
+        ),
+        (
+            "recession_definition",
+            r"(a recession[—\-]+a decrease in output)",
+        ),
+        (
+            "okun_slope",
+            r"(The slope of the line is\s*" + NUM + r"\..{0,220}?unemployment rate by roughly\s*-?" + NUM + r"%)",
+        ),
+        (
+            "okun_constant_growth",
+            r"(It takes a growth rate of about\s*" + NUM + r"%\s*to keep\s*unemployment constant\.)",
+        ),
+        (
+            "mortgage_securities",
+            r"(The banks that had issued the mortgages had often bundled and\s*"
+            r"packaged them together into new securities.{0,280}?nearly impossible to assess\.)",
+        ),
+        (
+            "housing_consumption",
+            r"(Hit by the decrease in housing prices and the collapse in stock prices.{0,220}?"
+            r"people sharply\s*cut their consumption\.)",
+        ),
+        (
+            "stock_markets_global",
+            r"(despite the\s*fact that the crisis originated in the United States,? European and emerging market stock\s*"
+            r"prices decreased by as much as their U\.S\. counterparts)",
+        ),
+        (
+            "china_fiscal_response",
+            r"(the adverse effect on demand was nearly fully offset by a\s*"
+            r"major fiscal expansion by the Chinese government.{0,160}?public investment\.)",
+        ),
+        (
+            "gdp_deflator_vs_cpi",
+            r"(The GDP deflator is the price of goods produced in the United States,? whereas\s*"
+            r"the CPI is the price of goods consumed by.{0,120})",
+        ),
+        (
+            "growth_unemployment_not_always",
+            r"(this image is not right:.{0,160}?unemployed find\s*jobs)",
+        ),
+        (
+            "euro_precrisis_unemployment",
+            r"(this pre-crisis level was already high,\s*" + NUM + r"%\s*for the Euro area over the\s*"
+            r"period 2000-2007)",
+        ),
+        (
+            "why_worry_unemployment",
+            r"((?:Unemployment|unemployment).{0,40}(?:costly|costs|matters|painful|serious).{0,160})",
+        ),
+        (
+            "real_gdp_growth",
+            r"((?:real GDP|Real GDP).{0,120}?(?:adjusted for inflation|constant dollars|chained).{0,80})",
+        ),
+    ]
+    flat = re.sub(r"[ \t]+", " ", text)
+    flat = flat.replace("-\n", "")  # undo line-break hyphenation
+    for topic, pat in patterns:
+        m = re.search(pat, flat, flags=re.I | re.S)
+        if not m:
+            continue
+        snippet = re.sub(r"\s+", " ", m.group(1) if m.lastindex else m.group(0)).strip()
+        if len(snippet) < 20:
+            continue
+        claims.append(
+            {
+                "claim_id": f"{doc_id}:{topic}:p{page}",
+                "topic": topic,
+                "doc_id": doc_id,
+                "page": page,
+                "trust_level": trust,
+                "text": snippet[:500],
+            }
+        )
+
+
+EURO_BAR_ORDER = [
+    "Spain",
+    "Greece",
+    "Portugal",
+    "Ireland",
+    "Italy",
+    "France",
+    "Germany",
+    "Netherlands",
+    "Austria",
+]
+
+
+def _ocr_euro_bar_chart(image_path: str, reader, y0: float, y1: float) -> dict[str, float]:
+    """Spatially OCR one bar chart region; values come only from the image."""
+    try:
+        from PIL import Image, ImageEnhance, ImageOps
+        import numpy as np
+    except Exception:
+        return {}
+
+    img = Image.open(image_path).convert("RGB")
+    w, h = img.size
+    crop = img.crop((int(0.12 * w), int(y0 * h), int(0.99 * w), int(y1 * h)))
+    crop = ImageEnhance.Contrast(ImageOps.grayscale(crop)).enhance(2.6)
+    crop = crop.resize((crop.width * 2, crop.height * 2))
+    res = reader.readtext(np.array(crop), detail=1, paragraph=False)
+
+    nums: list[tuple[float, float]] = []
+    names: list[tuple[float, str]] = []
+    for bbox, text, conf in res:
+        if conf < 0.1:
+            continue
+        xs = sum(pt[0] for pt in bbox) / 4.0
+        t = str(text).strip().replace(",", ".")
+        tl = re.sub(r"[^a-z]", "", t.lower())
+        for c in EURO_BAR_ORDER:
+            cl = c.lower()
+            if tl == cl or (len(tl) >= 4 and (cl.startswith(tl) or tl.startswith(cl[:4]))):
+                names.append((xs, c))
+                break
+        for m in re.finditer(r"(\d+)[.,](\d+)", t):
+            v = float(m.group(1) + "." + m.group(2))
+            if 3.0 <= v <= 30.0:
+                nums.append((xs, v))
+
+    byc: dict[str, list[float]] = {}
+    for xs, c in names:
+        byc.setdefault(c, []).append(xs)
+    name_x = {c: sorted(xs)[len(xs) // 2] for c, xs in byc.items()}
+
+    nums = sorted(nums)
+    uniq: list[tuple[float, float]] = []
+    for xs, v in nums:
+        if uniq and abs(uniq[-1][0] - xs) < 20 and abs(uniq[-1][1] - v) < 0.05:
+            continue
+        if uniq and abs(uniq[-1][0] - xs) < 20:
+            continue
+        uniq.append((xs, v))
+
+    out: dict[str, float] = {}
+    used_x: set[float] = set()
+    for c, nx in sorted(name_x.items(), key=lambda kv: kv[1]):
+        best = None
+        bestd = 1e9
+        bestx = None
+        for xs, v in uniq:
+            if xs in used_x:
+                continue
+            d = abs(xs - nx)
+            if d < bestd:
+                bestd = d
+                best = v
+                bestx = xs
+        if best is not None and bestd < 100:
+            out[c] = best
+            if bestx is not None:
+                used_x.add(bestx)
+
+    # Dedicated right-column OCR for Austria (label often only readable in a tight crop).
+    right = img.crop((int(0.75 * w), int(y0 * h), int(0.995 * w), int(y1 * h)))
+    right = ImageEnhance.Contrast(ImageOps.grayscale(right)).enhance(2.8)
+    right = right.resize((right.width * 3, right.height * 3))
+    right_vals: list[tuple[float, float]] = []
+    for bbox, t, conf in reader.readtext(np.array(right), detail=1, paragraph=False):
+        if conf < 0.15:
+            continue
+        xs = sum(pt[0] for pt in bbox) / 4.0
+        for m in re.finditer(r"(\d+)[.,](\d+)", str(t).replace(",", ".")):
+            v = float(m.group(1) + "." + m.group(2))
+            if 3.5 <= v <= 5.5:
+                right_vals.append((xs, v))
+    if right_vals:
+        # Austria is the rightmost bar on the chart.
+        out["Austria"] = sorted(right_vals, key=lambda kv: kv[0])[-1][1]
+
+    # Dedicated Germany column crop if missing.
+    if "Germany" not in out:
+        ger = img.crop((int(0.62 * w), int(y0 * h), int(0.78 * w), int(y1 * h)))
+        ger = ImageEnhance.Contrast(ImageOps.grayscale(ger)).enhance(2.8)
+        ger = ger.resize((ger.width * 3, ger.height * 3))
+        ger_vals = []
+        for t in reader.readtext(np.array(ger), detail=0, paragraph=False):
+            for m in re.finditer(r"(\d+)[.,](\d+)", str(t).replace(",", ".")):
+                v = float(m.group(1) + "." + m.group(2))
+                if 5.0 <= v <= 8.5:
+                    ger_vals.append(v)
+        if ger_vals:
+            out["Germany"] = ger_vals[0]
+
+    return out
+
+
+def enrich_euro_area_bar_facts(facts: list[NumericFact], assets, reader) -> None:
+    """Parse Figures A-6/A-7 bar labels via OCR into numeric facts."""
+    page_img = None
+    meta = None
+    for a in assets:
+        if a.label.lower() in {"figure a-6", "figure a-7"} and a.trust_level != "low":
+            page_img = a.image_path
+            meta = a
+            break
+    if not page_img or meta is None:
+        return
+
+    # Both labels are saved as full-page renders; split by vertical bands.
+    charts = [
+        ("Figure A-6", "2010", 0.28, 0.53),
+        ("Figure A-7", "2012", 0.52, 0.85),
+    ]
+    for label, year, y0, y1 in charts:
+        parsed = _ocr_euro_bar_chart(page_img, reader, y0, y1)
+        for country, val in parsed.items():
+            ent = country.lower().replace(" ", "_")
+            _add(
+                facts,
+                doc_id=meta.doc_id,
+                page=meta.page,
+                trust_level=meta.trust_level,
+                source_label=label,
+                entity=ent,
+                metric="unemployment",
+                year=year,
+                value=float(val),
+                value_type="outturn",
+                raw=f"OCR {label} {country}={val}",
+            )
+
+
 def ocr_figures(assets, reader) -> list[FigureRecord]:
     records: list[FigureRecord] = []
     for a in assets:
@@ -468,6 +703,7 @@ def build_kb(force: bool = False, do_ocr: bool = True) -> dict:
     paths = doc_paths(manifest)
 
     facts: list[NumericFact] = []
+    claims: list[dict] = []
     for doc_id, pdf_path in paths.items():
         doc = pymupdf.open(pdf_path)
         base = trusts[doc_id]
@@ -478,20 +714,26 @@ def build_kb(force: bool = False, do_ocr: bool = True) -> dict:
                 continue
             text = doc[i].get_text("text")
             extract_all_tables(doc_id, page_no, text, trust, facts)
+            extract_prose_claims(doc_id, page_no, text, trust, claims)
 
     figure_records: list[FigureRecord] = []
     if do_ocr:
         try:
             import easyocr
 
-            reader = easyocr.Reader(["en"], gpu=True, verbose=False)
+            try:
+                reader = easyocr.Reader(["en"], gpu=True, verbose=False)
+            except Exception:
+                reader = easyocr.Reader(["en"], gpu=False, verbose=False)
             figure_records = ocr_figures(assets, reader)
+            enrich_euro_area_bar_facts(facts, assets, reader)
         except Exception as e:
             print("OCR skipped:", e)
 
     payload = {
         "numeric_facts": [asdict(f) for f in facts],
         "figures": [asdict(f) for f in figure_records],
+        "claims": claims,
         "text_chunks": [
             {
                 "chunk_id": c.chunk_id,

@@ -7,7 +7,7 @@ from rag.config import TOP_K_BM25, TOP_K_DENSE, TOP_K_FINAL
 from rag.index import MultimodalIndex
 
 FIG_MENTION_RE = re.compile(
-    r"(Figure|Table)\s+(([12]|[A-C])-\d+(?:\s*\(corrected\))?)",
+    r"(Figures?|Tables?)\s+(([12]|[A-C])-\d+(?:\s*\(corrected\))?)",
     re.IGNORECASE,
 )
 
@@ -30,14 +30,26 @@ def normalize_label(label: str) -> str:
     m = FIG_MENTION_RE.search(label)
     if not m:
         return label
-    kind = "Figure" if m.group(1).lower() == "figure" else "Table"
+    kind = "Figure" if m.group(1).lower().startswith("figure") else "Table"
     rest = m.group(2)
     rest = re.sub(r"\(\s*corrected\s*\)", "(corrected)", rest, flags=re.I)
     return f"{kind} {rest}"
 
 
 def mentioned_labels(question: str) -> list[str]:
-    return [normalize_label(m.group(0)) for m in FIG_MENTION_RE.finditer(question)]
+    labels = [normalize_label(m.group(0)) for m in FIG_MENTION_RE.finditer(question)]
+    # Also catch "Figures A-6 and A-7" / "Tables 1-2 and 1-3" second ids
+    for m in re.finditer(
+        r"(Figures?|Tables?)\s+(([12]|[A-C])-\d+).*?\band\s+(([12]|[A-C])-\d+)",
+        question,
+        flags=re.I,
+    ):
+        kind = "Figure" if m.group(1).lower().startswith("figure") else "Table"
+        for rest in (m.group(2), m.group(4)):
+            lab = f"{kind} {rest}"
+            if lab not in labels:
+                labels.append(lab)
+    return labels
 
 
 def _rrf_fuse(rank_lists: list[list[str]], k: int = 60) -> dict[str, float]:
