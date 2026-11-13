@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
 from pathlib import Path
@@ -8,7 +9,8 @@ from pathlib import Path
 import pandas as pd
 
 from rag.answer_engine import StructuredAnswerer
-from rag.config import DATA_DIR, OUTPUT_DIR
+from rag.config import ARTIFACTS, DATA_DIR, OUTPUT_DIR
+from rag.extract_kb import build_kb
 from rag.memory import MemoryBank
 
 try:
@@ -27,6 +29,17 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
 
     questions = pd.read_csv(qpath, dtype=str, keep_default_na=False)
     print(f"Loaded {len(questions)} questions from {qpath}", flush=True)
+
+    print("Building auto-extracted KB (tables + OCR)...", flush=True)
+    # Reuse figure OCR if present; always refresh table facts from PDFs.
+    prev_figs = []
+    prev = ARTIFACTS / "kb_facts.json"
+    if prev.exists():
+        prev_figs = json.loads(prev.read_text(encoding="utf-8")).get("figures", [])
+    kb = build_kb(force=True, do_ocr=(len(prev_figs) == 0))
+    if prev_figs and not kb.get("figures"):
+        kb["figures"] = prev_figs
+        (ARTIFACTS / "kb_facts.json").write_text(json.dumps(kb, indent=2), encoding="utf-8")
 
     answerer = StructuredAnswerer()
     memory_bank = MemoryBank()
