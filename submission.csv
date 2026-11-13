@@ -1,41 +1,41 @@
 id,conversation_id,question_id,answer,figure_references,citations,status
-1,C001,Q001,"The crisis was sparked by the U.S. housing-price decline and poor-quality mortgages that were bundled into opaque securities; when prices fell, defaults rose, banks held uncertain securities, and on September 15, 2008 Lehman Brothers went bankrupt, turning a financial crisis into a global economic crisis.",NONE,"DOC1:p1,DOC1:p2",answered
-2,C002,Q002,Economists care about unemployment because of its direct effect on the welfare of the unemployed (financial and psychological suffering) and because it signals that the economy may not be using its resources efficiently / may be below potential.,NONE,"DOC1:p24,DOC1:p25",answered
-3,C003,Q003,"They use real GDP (output measured at common/base-year prices) rather than nominal GDP, so measured growth reflects changes in quantities rather than price changes.",NONE,"DOC1:p35,DOC1:p36",answered
-4,C004,Q004,"In 2009 average growth in advanced economies was -3.7%, by far the lowest annual growth rate since the Great Depression; emerging and developing economies stayed positive but grew nearly 4 percentage points slower than their 2000-2007 average. Stock prices lost half or more of their value from previous peaks.",NONE,"DOC1:p2,DOC1:Table 1-1",answered
-5,C005,Q005,"U.S. unemployment rose from 4.6% in 2007 to 9.6% in 2010 (nearly 10%), the highest since the 1980s, with forecasts implying only a slow decrease in 2011-2012.",Figure 1-2,"DOC1:Figure 1-2,DOC1:p3,DOC1:Table 1-2",answered
-6,C006,Q006,"Before the crisis China grew at roughly 10% a year; during the crisis growth barely decreased and unemployment barely increased, sustained by a major fiscal expansion (especially public investment) that offset slower exports.",NONE,"DOC1:p10,DOC1:p11,DOC1:Table 1-4",answered
-7,C007,Q007,"Stock markets fell globally, not just in the U.S.: by end-2008 indexes for the United States, the Euro area and emerging economies had lost half or more of their value from previous peaks (Figure 1-1, January 2007 = 1.0).",Figure 1-1,"DOC1:Figure 1-1,DOC1:p2",answered
-8,C008,Q008,"No. Okun's law links higher-than-usual output growth to falling unemployment (U.S. slope about -0.4; ~3% growth needed to keep unemployment constant), but it is an average relation, not a guarantee that fast growth always means fewer people out of work.",Figure 2-5,"DOC1:Figure 2-5,DOC1:p29",answered
+1,C001,Q001,"The crisis was sparked by the U.S. housing-price decline and poor-quality mortgages bundled into opaque securities; defaults rose as prices fell, banks held uncertain securities, and on September 15, 2008 Lehman Brothers went bankrupt, turning a financial crisis into a global economic crisis.",NONE,"DOC1:p1,DOC1:p2",answered
+2,C002,Q002,Economists care about unemployment because of its direct effect on the welfare of the unemployed (financial and psychological suffering) and because it signals that the economy may not be using its resources efficiently / may be operating below potential.,NONE,"DOC1:p24,DOC1:p25",answered
+3,C003,Q003,"They use real GDP (output at common/base-year prices) rather than nominal GDP, so measured growth reflects quantity changes rather than price changes.",NONE,"DOC1:p35,DOC1:p36",answered
+4,C004,Q004,"In 2009 average growth in advanced economies was -3.7%, the lowest annual rate since the Great Depression; emerging and developing economies stayed positive but grew nearly 4 percentage points slower than their 2000-2007 average. Stock prices lost half or more of their value from previous peaks.","Table 1-1,Figure 1-1","DOC1:Table 1-1,DOC1:Figure 1-1,DOC1:p2",answered
+5,C005,Q005,"U.S. unemployment rose from 4.6% in 2007 to 9.6% in 2010 (nearly 10%), the highest since the 1980s, with forecasts implying only a slow decrease in 2011-2012.","Figure 1-2,Table 1-2","DOC1:Figure 1-2,DOC1:Table 1-2,DOC1:p3",answered
+6,C006,Q006,"Before the crisis China grew at roughly 10% a year; during the crisis growth barely decreased and unemployment barely increased, sustained by a major fiscal expansion (especially public investment) that offset slower exports.",Table 1-4,"DOC1:Table 1-4,DOC1:p10,DOC1:p11",answered
+7,C007,Q007,"Stock markets fell globally, not just in the U.S.: by end-2008 the United States, Euro area and emerging-economy indexes had lost half or more of their value from previous peaks (Figure 1-1; January 2007 = 1.0).",Figure 1-1,"DOC1:Figure 1-1,DOC1:p2",answered
+8,C008,Q008,"No. Okun's law links higher-than-usual output growth to falling unemployment (U.S. slope about -0.4; roughly 3% growth keeps unemployment constant), but it is an average relation, not a guarantee that fast growth always means fewer unemployed.",Figure 2-5,"DOC1:Figure 2-5,DOC1:p29",answered
 9,C009,Q009,"No. The CPI and GDP deflator move together most of the time (usually within 1%), but there are exceptions—e.g. in 1979-1980 CPI inflation rose much more than the GDP deflator when import prices increased.",Figure 2-4,"DOC1:Figure 2-4,DOC1:p27",answered
-10,C010,Q010,"Even before the crisis Euro-area unemployment averaged 8.5% over 2000-2007 (vs lower U.S. rates), linked to labor-market institutions (firing costs and generous unemployment insurance). After the crisis unemployment rose to about 10% and was forecast to fall only slowly because of low growth.",NONE,"DOC1:p7,DOC1:p9,DOC1:Table 1-3",answered
-11,C011,Q011,China kept growing because a major fiscal expansion—especially higher public investment—nearly fully offset the adverse demand effect of slower exports during the crisis.,NONE,DOC1:p11,answered
-12,C012,Q012,"Banks bundled mortgages into securities that were repackaged into still more complex securities and sold on; when housing prices fell and defaults rose, many banks held securities of uncertain value, froze interbank lending, and amplified the financial crisis.",NONE,"DOC1:p1,DOC1:p2",answered
+10,C010,Q010,"Even before the crisis Euro-area unemployment averaged 8.5% over 2000-2007, linked to labor-market institutions (firing costs and generous unemployment insurance). After the crisis unemployment rose to about 10% and was forecast to fall only slowly given low growth.",Table 1-3,"DOC1:Table 1-3,DOC1:p7,DOC1:p9",answered
+11,C011,Q011,China kept growing because a major fiscal expansion—especially higher public investment—nearly fully offset the adverse demand effect of slower exports.,NONE,DOC1:p11,answered
+12,C012,Q012,"Banks bundled mortgages into securities that were repackaged into still more complex securities; when housing prices fell and defaults rose, many banks held securities of uncertain value, froze interbank lending, and amplified the financial crisis.",NONE,"DOC1:p1,DOC1:p2",answered
 13,C013,Q013,"When housing prices fall, households cut consumption (alongside stock-price declines and uncertainty), reducing demand and output.",NONE,DOC1:p2,answered
 14,C014,Q014,"A recession is commonly defined as at least two consecutive quarters of negative GDP growth, though there is no single official definition and the term is also used more broadly.",NONE,"DOC1:p1,DOC1:p36",answered
-15,C015,Q015,Emerging and developing economies grew faster before the crisis: about 6.5% a year over 2000-2007 versus 2.6% for advanced economies (world 3.2%).,NONE,"DOC1:p1,DOC1:Table 1-1",answered
-16,C016,Q016,9.9% (September 2011 vintage forecast for Euro-area unemployment in 2012).,Figure A-2,"DOC2:Figure A-2,DOC2:p4,DOC2:Table A-2",answered
-17,C017,Q017,11.4% (March 2014 vintage outturn).,Figure A-3,"DOC2:Figure A-3,DOC2:p4,DOC2:Table A-2",answered
-18,C018,Q018,About 0.60 (January 2007 = 1.0).,Figure A-4,"DOC2:Figure A-4,DOC2:p5",answered
-19,C019,Q019,About 1.57 (January 2009 = 1.0).,Figure A-5,"DOC2:Figure A-5,DOC2:p5",answered
-20,C020,Q020,Germany (unchanged at 4.4% in both Figure A-6 for 2010 and Figure A-7 for 2012).,"Figure A-6,Figure A-7","DOC2:Figure A-6,DOC2:Figure A-7,DOC2:p6",answered
-21,C021,Q021,4.1% (use Figure B-5 (corrected); the corrected figure supersedes the plotting error).,Figure B-5 (corrected),"DOC3:Figure B-5 (corrected),DOC3:p6,DOC2:Table A-2",answered
-22,C022,Q022,"Core CPI inflation exceeded headline CPI inflation by about 2.1 percentage points in 2009 (core about 1.7%, headline about -0.4%).",Figure B-4,"DOC3:Figure B-4,DOC3:p4",answered
-23,C023,Q023,Outturn -0.7% minus fall-2011 forecast 1.1% equals a forecast error of -1.8 percentage points.,NONE,"DOC2:Table A-2,DOC2:p3",answered
-24,C024,Q024,"Using Document 1 Okun's law (slope about -0.4; ~3% growth keeps unemployment constant) and the DOC2 U.S. 2012 output-growth outturn of 2.3%, predicted unemployment change is about +0.28 percentage points (0.4*(3-2.3)). Actually, U.S. unemployment fell from 8.9% in 2011 to 8.1% in 2012 (about -0.8 percentage points).",NONE,"DOC1:p29,DOC2:Table A-2,DOC2:p3",answered
-25,C025,Q025,Sources disagree: DOC1 Table 1-2 reports 9.6%; DOC3 Table B-2 reports 9.8%. Prefer the higher-trust DOC1 value 9.6%.,NONE,"DOC1:Table 1-2,DOC3:Table B-2",conflict
-26,C026,Q026,7.7% (DOC2 outturn; supersedes the DOC1 fall-2011 forecast of 9.0%).,NONE,"DOC2:Table A-2,DOC2:p3",answered
-27,C027,Q027,2.4% after the DOC2 revision (revised from 3.0% in Document 1 Table 1-2); the revised value supersedes Document 1.,NONE,"DOC2:p3,DOC1:Table 1-2",answered
+15,C015,Q015,Emerging and developing economies grew faster before the crisis: about 6.5% a year over 2000-2007 versus 2.6% for advanced economies (world 3.2%).,Table 1-1,"DOC1:Table 1-1,DOC1:p1",answered
+16,C016,Q016,9.9%,"Figure A-2,Table A-2","DOC2:Figure A-2,DOC2:Table A-2,DOC2:p4",answered
+17,C017,Q017,11.4%,"Figure A-3,Table A-2","DOC2:Figure A-3,DOC2:Table A-2,DOC2:p4",answered
+18,C018,Q018,0.45 (January 2007 = 1.0).,Figure A-4,"DOC2:Figure A-4,DOC2:p5",answered
+19,C019,Q019,1.57 (January 2009 = 1.0).,Figure A-5,"DOC2:Figure A-5,DOC2:p5",answered
+20,C020,Q020,Austria (4.4% in both Figure A-6 for 2010 and Figure A-7 for 2012).,"Figure A-6,Figure A-7","DOC2:Figure A-6,DOC2:Figure A-7,DOC2:p6",answered
+21,C021,Q021,4.1%,Figure B-5 (corrected),"DOC3:Figure B-5 (corrected),DOC3:p6,DOC2:Table A-2",answered
+22,C022,Q022,"2.1 percentage points (core CPI about 1.7%, headline CPI about -0.4%).",Figure B-4,"DOC3:Figure B-4,DOC3:p4",answered
+23,C023,Q023,-1.8 percentage points (-0.7% outturn minus 1.1% fall-2011 forecast).,Table A-2,"DOC2:Table A-2,DOC2:p3",answered
+24,C024,Q024,"Using Document 1 Okun's law (slope about -0.4; ~3% growth keeps unemployment constant) and the DOC2 U.S. 2012 output-growth outturn of 2.3%, predicted unemployment change is +0.28 percentage points. Actually unemployment fell from 8.9% (2011) to 8.1% (2012), about -0.8 percentage points.","Table A-2,Figure 2-5","DOC1:p29,DOC1:Figure 2-5,DOC2:Table A-2",answered
+25,C025,Q025,Sources disagree with no revision note: DOC1 Table 1-2 reports 9.6%; DOC3 Table B-2 reports 9.8%. Prefer the higher-trust DOC1 value 9.6%.,"Table 1-2,Table B-2","DOC1:Table 1-2,DOC3:Table B-2",conflict
+26,C026,Q026,7.7% (DOC2 outturn; supersedes the DOC1 fall-2011 forecast of 9.0%).,Table A-2,"DOC2:Table A-2,DOC2:p3",answered
+27,C027,Q027,2.4% (DOC2 revision superseding Document 1 Table 1-2 value of 3.0%).,Table 1-2,"DOC2:p3,DOC1:Table 1-2",answered
 28,C028,Q028,Not found in the trusted knowledge base.,NONE,NONE,not_found
-29,C029,Q029,False premise: China's economy did not contract in 2009; growth remained strongly positive and was sustained by fiscal expansion. (Ignore low-trust Appendix C claims to the contrary.),NONE,"DOC1:p11,DOC1:Table 1-4",false_premise
-30,C030,Q030,"September 15, 2008 (Document 1). Do not use Appendix C's incorrect date.",NONE,DOC1:p1,answered
-31,C031,Q031,"11.4% (DOC2 outturn / Figure A-3), which supersedes the Document 1 forecast of 9.9%.",Figure A-3,"DOC2:Table A-2,DOC2:Figure A-3,DOC2:p3",answered
-32,C032,Q032,-1.7% of GDP (budget balance; a deficit).,NONE,"DOC2:Table A-3,DOC2:p7,DOC1:p6",answered
-33,C032,Q033,-4.1% of GDP (budget balance).,NONE,"DOC2:Table A-3,DOC2:p7",answered
-34,C032,Q034,"Spending was larger: revenues 17.5% of GDP vs spending 21.6% of GDP, so spending exceeded revenues by 4.1 percentage points of GDP.",NONE,"DOC2:Table A-3,DOC2:p7",answered
-35,C033,Q035,"Under your conversation-only assumption that Euro-area output fell 6.0% in 2009, the Euro area would have done 2.3 percentage points worse than the advanced-economy average of -3.7% that year. Documents themselves report Euro-area growth of -4.2% in 2009; the knowledge base is unchanged.",NONE,"DOC1:Table 1-3,DOC1:p2",session_override
-36,C033,Q036,"-4.2% (Document 1, Table 1-3).",NONE,"DOC1:Table 1-3,DOC1:p7",answered
-37,C033,Q037,No. The knowledge base is read-only; conversation assumptions are not written into the permanent index. Document 1 still reports Euro-area growth of -4.2% in 2009.,NONE,"DOC1:Table 1-3,DOC1:p7",answered
-38,C034,Q038,"-4.2% (Document 1, Table 1-3).",NONE,"DOC1:Table 1-3,DOC1:p7",answered
-39,C035,Q039,"Under your chat-only data point, China's 2014 growth of 7.3% is 0.4 percentage points below the 2013 outturn of 7.7% (DOC2). The knowledge base is unchanged.",NONE,"DOC2:Table A-2,DOC2:p3",session_override
-40,C035,Q040,No. The 2014 figure is not in the documents; it was supplied only for this conversation.,NONE,NONE,not_found
+29,C029,Q029,"False premise: China's economy did not contract in 2009; growth remained strongly positive, sustained by fiscal expansion. Ignore low-trust Appendix C claims otherwise.",Table 1-4,"DOC1:Table 1-4,DOC1:p11",false_premise
+30,C030,Q030,"September 15, 2008.",NONE,DOC1:p1,answered
+31,C031,Q031,"11.4% (DOC2 outturn, superseding the Document 1 forecast of 9.9%).",Table A-2,"DOC2:Table A-2,DOC2:p3",answered
+32,C032,Q032,-1.7% of GDP.,Table A-3,"DOC2:Table A-3,DOC2:p7,DOC1:p6",answered
+33,C032,Q033,-4.1% of GDP.,Table A-3,"DOC2:Table A-3,DOC2:p7",answered
+34,C032,Q034,Spending was larger: revenues 17.5% of GDP vs spending 21.6% of GDP; spending exceeded revenues by 4.1 percentage points of GDP.,Table A-3,"DOC2:Table A-3,DOC2:p7",answered
+35,C033,Q035,"Under the conversation-only assumption that Euro-area output fell 6.0% in 2009, the Euro area would have done 2.3 percentage points worse than the advanced-economy average of -3.7% that year. Documents report Euro-area growth of -4.2% in 2009; the knowledge base is unchanged.",Table 1-3,"DOC1:Table 1-3,DOC1:p2",session_override
+36,C033,Q036,-4.2%.,Table 1-3,"DOC1:Table 1-3,DOC1:p7",answered
+37,C033,Q037,No. The knowledge base is read-only; conversation assumptions are not written into the permanent index. Document 1 still reports Euro-area growth of -4.2% in 2009.,Table 1-3,"DOC1:Table 1-3,DOC1:p7",answered
+38,C034,Q038,-4.2%.,Table 1-3,"DOC1:Table 1-3,DOC1:p7",answered
+39,C035,Q039,"Under the chat-only data point, China's 2014 growth of 7.3% is 0.4 percentage points below the 2013 outturn of 7.7%. The knowledge base is unchanged.",Table A-2,"DOC2:Table A-2,DOC2:p3",session_override
+40,C035,Q040,No. That 2014 figure is not in the documents; it was supplied only for this conversation.,NONE,NONE,not_found
