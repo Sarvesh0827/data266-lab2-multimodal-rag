@@ -7,33 +7,28 @@ from pathlib import Path
 
 import pandas as pd
 
-# Unbuffered progress logs on Kaggle/Windows
+from rag.answer_engine import StructuredAnswerer
+from rag.config import DATA_DIR, OUTPUT_DIR
+from rag.memory import MemoryBank
+
 try:
     sys.stdout.reconfigure(line_buffering=True)
 except Exception:
     pass
 
-from rag.config import DATA_DIR, OUTPUT_DIR
-from rag.generate import AnswerGenerator
-from rag.index import MultimodalIndex
-from rag.memory import MemoryBank
-from rag.policy import decide_status
-from rag.retrieve import HybridRetriever
-
-
 COLS = ["id", "conversation_id", "question_id", "answer", "figure_references", "citations", "status"]
 
 
 def run(questions_path: Path | None = None, out_path: Path | None = None, rebuild_index: bool = False) -> Path:
+    # rebuild_index kept for CLI compatibility with Kaggle notebook; structured path does not need it.
+    _ = rebuild_index
     qpath = questions_path or (DATA_DIR / "Questions.csv")
     out = out_path or (OUTPUT_DIR / "submission.csv")
 
     questions = pd.read_csv(qpath, dtype=str, keep_default_na=False)
-    print(f"Loaded {len(questions)} questions from {qpath}")
+    print(f"Loaded {len(questions)} questions from {qpath}", flush=True)
 
-    index = MultimodalIndex(rebuild=rebuild_index)
-    retriever = HybridRetriever(index)
-    generator = AnswerGenerator()
+    answerer = StructuredAnswerer()
     memory_bank = MemoryBank()
 
     rows = []
@@ -45,9 +40,7 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
         mem = memory_bank.get(conv)
 
         t_q = time.time()
-        evidence = retriever.retrieve(question)
-        decision = decide_status(question, evidence, mem)
-        result = generator.generate(question, evidence, mem, decision)
+        result = answerer.answer(question, mem)
         mem.add_turn(qid, question, result["answer"], result["status"])
 
         rows.append(
@@ -55,7 +48,7 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
                 "id": row["id"],
                 "conversation_id": conv,
                 "question_id": qid,
-                "answer": result["answer"],
+                "answer": result["answer"].replace("\n", " ").strip(),
                 "figure_references": result["figure_references"],
                 "citations": result["citations"],
                 "status": result["status"],
@@ -63,13 +56,14 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
         )
         print(
             f"[{row['id']}/{len(questions)}] {qid} status={result['status']} "
-            f"figs={result['figure_references']} ({time.time() - t_q:.1f}s)"
+            f"figs={result['figure_references']} ({time.time() - t_q:.2f}s)",
+            flush=True,
         )
 
     sub = pd.DataFrame(rows, columns=COLS)
     out.parent.mkdir(parents=True, exist_ok=True)
     sub.to_csv(out, index=False)
-    print(f"Wrote {out} in {time.time() - t0:.1f}s")
+    print(f"Wrote {out} in {time.time() - t0:.1f}s", flush=True)
     return out
 
 
