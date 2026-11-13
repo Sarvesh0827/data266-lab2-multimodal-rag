@@ -44,13 +44,20 @@ def run(questions_path: Path | None = None, out_path: Path | None = None, rebuil
         try:
             import easyocr
             from dataclasses import asdict
-            from rag.extract_kb import NumericFact, enrich_euro_area_bar_facts
+            from rag.extract_kb import (
+                NumericFact,
+                enrich_b4_cpi_facts,
+                enrich_euro_area_bar_facts,
+                enrich_stock_index_facts,
+            )
             from rag.ingest import extract_knowledge_base
 
             reader = easyocr.Reader(["en"], gpu=False, verbose=False)
             _, assets = extract_knowledge_base(force=False)
             facts = [NumericFact(**f) for f in kb["numeric_facts"]]
             enrich_euro_area_bar_facts(facts, assets, reader)
+            enrich_stock_index_facts(facts, assets, reader)
+            enrich_b4_cpi_facts(facts, assets, reader)
             kb["numeric_facts"] = [asdict(f) for f in facts]
         except Exception as e:
             print("Bar-chart OCR enrich skipped:", e, flush=True)

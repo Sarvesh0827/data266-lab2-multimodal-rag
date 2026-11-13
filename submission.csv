@@ -1,26 +1,26 @@
 id,conversation_id,question_id,answer,figure_references,citations,status
-1,C001,Q001,"As housing prices continued to decline, it became clear that many of the mortgage loans that had been given out during the earlier expansion were of poor quality. Because the links be- tween Lehman and other banks were so opaque, many other banks looked appeared Table 1-1 World Output Growth since 2000 Percent 2000–2007 (average) 2008 2009 2010 2011* 2012* World 3.2 1.5 −2.3 4.0 3.0 3.2 Advanced economies 2.6 0.1 −3.7 3.0 1.6 1.9 Emerging and developing economies 6.5 6.0 2.8 7.3 6.4 6.0 Output growth:",NONE,DOC1:p1,answered
+1,C001,Q001,"As housing prices continued to decline, it became clear that many of the mortgage loans that had been given out during the earlier expansion were of poor quality. On September 15, 2008, a major bank, Lehman Brothers, went bankrupt.",NONE,DOC1:p1,answered
 2,C002,Q002,"This is why unemployment goes up in recessions and down in expansions. unemployment rate has fluctuated between 3 and 10%, going up during recessions and down during expansions.",NONE,"DOC1:p29,DOC1:p24",answered
-3,C003,Q003,"The GDP deflator in year t, Pt, is defined as the ratio of nominal GDP to real GDP in year t: Pt = Nominal GDPt Real GDPt = $Yt Yt Note that, in the year in which, by construction, real GDP is equal to nominal GDP (2005 at this point in the United States), this definition implies that the price level is equal to 1. One advantage to defining the price level as the GDP deflator is that it implies a simple relation among nominal GDP, real GDP, and the GDP deflator.",NONE,DOC1:p26,answered
+3,C003,Q003,"They use real GDP (GDP adjusted for inflation via the GDP deflator), not nominal GDP. Construct real GDP for years 2005 and 2006 by using the average price of each good over the two years.",NONE,DOC1:p35,answered
 4,C004,Q004,"The 2009 recession was severe: world output growth -2.3%, advanced economies -3.7%.",Table 1-1,"DOC1:Table 1-1,DOC1:p1",answered
 5,C005,Q005,"U.S. unemployment rose sharply after the crisis, to 9.3% in 2009 and 9.6% in 2010 (from 5.8% in 2008).",Table 1-2,"DOC1:Table 1-2,DOC1:p5",answered
 6,C006,Q006,Before the crisis (2000-2007 average) China grew about 10.5% a year. During/around the crisis: 2008 9.6%; 2009 9.2%; 2010 10.3%.,Table 1-4,"DOC1:Table 1-4,DOC1:p11",answered
 7,C007,Q007,"Stock markets fell globally, not only in the U.S.: despite the fact that the crisis originated in the United States, European and emerging market stock prices decreased by as much as their U.S. counterparts",Figure 1-1,DOC1:p2,answered
-8,C008,Q008,"No. High growth does not automatically mean fewer people out of work: This image is not right: Every month, many people become unemployed, and many of the unemployed find jobs",NONE,DOC1:p24,answered
-9,C009,Q009,"Re- call that the GDP deflator is the price of goods produced in the United States, whereas the CPI is the price of goods consumed in the United States. he GDP deflator is the price of goods produced in the United States, whereas the CPI is the price of goods consumed in the United States.",NONE,DOC1:p27,answered
+8,C008,Q008,"No. High growth does not automatically mean fewer people out of work: Every month, many people become unemployed, and many of the unemployed find jobs",NONE,DOC1:p24,answered
+9,C009,Q009,"Not always. the GDP deflator is the price of goods produced in the United States, whereas the CPI is the price of goods consumed in the United States. So the two inflation measures can diverge.",NONE,DOC1:p27,answered
 10,C010,Q010,"Even before the crisis, Euro-area unemployment averaged 8.5% over 2000-2007. After the crisis it was about 10.1% in 2010.",Table 1-3,"DOC1:Table 1-3,DOC1:p7,DOC1:p7",answered
 11,C011,Q011,"The adverse effect on demand was nearly fully offset by a major fiscal expansion by the Chinese government, with, in particular, a major increase in public investment (pre-crisis average growth about 10.5%; 2009 growth 9.2%).",Table 1-4,"DOC1:p11,DOC1:Table 1-4",answered
-12,C012,Q012,"This was not the worst of it: The banks that had issued the mortgages had often bundled and packaged them together into new securities and then sold these securities to other banks and investors. The result is that many banks, instead of holding the mortgages themselves, held these securities, which were so complex that their value was nearly impossible to assess.",NONE,DOC1:p1,answered
-13,C013,Q013,"Hit by the decrease in housing prices and the collapse in stock prices, and worried that this might be the beginning of another Great Depression, people sharply cut their consumption.",NONE,DOC1:p2,answered
+12,C012,Q012,This was not the worst of it: The banks that had issued the mortgages had often bundled and packaged them together into new securities and then sold these securities to other banks and investors.,NONE,DOC1:p1,answered
+13,C013,Q013,"Consumption falls: Hit by the decrease in housing prices and the collapse in stock prices, and worried that this might be the beginning of another Great Depression, people sharply cut their consumption.",NONE,DOC1:p2,answered
 14,C014,Q014,A recession is defined in the documents as a decrease in output,NONE,DOC1:p1,answered
 15,C015,Q015,Emerging and developing economies grew faster before the crisis: emerging 6.5% vs advanced 2.6% average annual output growth over 2000-2007.,Table 1-1,"DOC1:Table 1-1,DOC1:p1",answered
 16,C016,Q016,9.9%,"Figure A-2,Table A-2","DOC2:Figure A-2,DOC2:Table A-2,DOC2:p4",answered
 17,C017,Q017,11.4%,"Figure A-3,Table A-2","DOC2:Figure A-3,DOC2:Table A-2,DOC2:p7",answered
-18,C018,Q018,0.6 (January 2007 = 1.0).,Figure A-4,"DOC2:Figure A-4,DOC2:p5",answered
-19,C019,Q019,1.32 (January 2009 = 1.0).,Figure A-5,"DOC2:Figure A-5,DOC2:p5",answered
+18,C018,Q018,0.45 (January 2007 = 1.0).,Figure A-4,"DOC2:Figure A-4,DOC2:p5",answered
+19,C019,Q019,1.57 (January 2009 = 1.0).,Figure A-5,"DOC2:Figure A-5,DOC2:p5",answered
 20,C020,Q020,Austria (4.4% in both Figure A-6 and Figure A-7).,"Figure A-6,Figure A-7","DOC2:Figure A-6,DOC2:Figure A-7,DOC2:p6",answered
 21,C021,Q021,4.1%,Figure B-5 (corrected),"DOC3:Figure B-5 (corrected),DOC3:p6,DOC2:Table A-2",answered
-22,C022,Q022,"7 percentage points (core CPI 3%, headline CPI -4%).",Figure B-4,"DOC3:Figure B-4,DOC3:p4",answered
+22,C022,Q022,"2.1 percentage points (core CPI 1.7%, headline CPI -0.4%).",Figure B-4,"DOC3:Figure B-4,DOC3:p4",answered
 23,C023,Q023,-1.8 percentage points (-0.7% outturn minus 1.1% forecast).,Table A-2,"DOC2:Table A-2,DOC2:p3",answered
 24,C024,Q024,"Using Okun's law from the documents (slope about -0.4, constant-unemployment growth about 3%) and U.S. 2012 output growth outturn 2.3%, predicted unemployment change is 0.28 percentage points. Actual change was -0.8 percentage points.",Table A-2,"DOC2:Table A-2,DOC2:p3,DOC1:p29",answered
 25,C025,Q025,Sources disagree with no revision note: DOC1 reports 9.6%; DOC3 reports 9.8%. Prefer higher-trust DOC1 value 9.6%.,"Table 1-2,Table B-2","DOC1:Table 1-2,DOC1:p5,DOC3:Table B-2,DOC3:p5",conflict

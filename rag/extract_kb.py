@@ -655,6 +655,198 @@ def enrich_euro_area_bar_facts(facts: list[NumericFact], assets, reader) -> None
             )
 
 
+def _parse_decimal_tokens(text: str) -> list[float]:
+    vals = []
+    t = text.strip().replace(",", ".")
+    # OCR sometimes drops the leading decimal point: "045" -> 0.45, "063" -> 0.63
+    if re.fullmatch(r"0\d{2}", t):
+        vals.append(float("0." + t[1:]))
+        return vals
+    if re.fullmatch(r"\d{3}", t) and t.startswith("0"):
+        vals.append(float("0." + t[1:]))
+        return vals
+    for m in re.finditer(r"-?\d+\.\d+", t):
+        vals.append(float(m.group(0)))
+    return vals
+
+
+def enrich_stock_index_facts(facts: list[NumericFact], assets, reader) -> None:
+    """OCR Figures A-4/A-5 end-point and trough labels (from page render)."""
+    meta = None
+    page_img = None
+    for a in assets:
+        if a.label.lower() in {"figure a-4", "figure a-5"} and a.trust_level != "low":
+            page_img = a.image_path
+            meta = a
+            break
+    if not page_img or meta is None:
+        return
+    try:
+        from PIL import Image, ImageEnhance, ImageOps
+        import numpy as np
+    except Exception:
+        return
+
+    img = Image.open(page_img).convert("RGB")
+    w, h = img.size
+    arr = np.array(ImageEnhance.Contrast(ImageOps.grayscale(img)).enhance(1.8))
+    res = reader.readtext(arr, detail=1, paragraph=False)
+
+    points: list[tuple[float, float, float]] = []  # x_frac, y_frac, value
+    for bbox, text, conf in res:
+        if conf < 0.25:
+            continue
+        xs = sum(pt[0] for pt in bbox) / 4.0 / w
+        ys = sum(pt[1] for pt in bbox) / 4.0 / h
+        raw = str(text).strip()
+        vals = _parse_decimal_tokens(raw)
+        if not vals and re.fullmatch(r"0\d{2}", raw):
+            vals = [float("0." + raw[1:])]
+        for v in vals:
+            if 0.2 <= abs(v) <= 3.5:
+                points.append((xs, ys, v))
+
+    def add_stock(label, entity, year, value, note):
+        _add(
+            facts,
+            doc_id=meta.doc_id,
+            page=meta.page,
+            trust_level=meta.trust_level,
+            source_label=label,
+            entity=entity,
+            metric="stock_index",
+            year=year,
+            value=float(value),
+            value_type="outturn",
+            raw=note,
+        )
+
+    # A-5 end labels: right side of lower chart, stacked emerging/US/euro.
+    a5_end = sorted(
+        [(ys, v) for xs, ys, v in points if xs >= 0.75 and 0.62 <= ys <= 0.78 and 1.1 <= v <= 2.3],
+        key=lambda t: t[0],
+    )
+    a5_vals = []
+    for ys, v in a5_end:
+        if a5_vals and abs(a5_vals[-1] - v) < 0.02:
+            continue
+        a5_vals.append(v)
+    if len(a5_vals) >= 3:
+        add_stock("Figure A-5", "emerging_economies", "2010-12", a5_vals[0], f"OCR A-5 end {a5_vals}")
+        add_stock("Figure A-5", "united_states", "2010-12", a5_vals[1], f"OCR A-5 end {a5_vals}")
+        add_stock("Figure A-5", "euro_area", "2010-12", a5_vals[2], f"OCR A-5 end {a5_vals}")
+
+    # A-4 end labels (right edge, upper chart)
+    a4_end = sorted(
+        [(ys, v) for xs, ys, v in points if xs >= 0.75 and 0.38 <= ys <= 0.55 and 0.4 <= v <= 1.4],
+        key=lambda t: t[0],
+    )
+    a4_end_vals = []
+    for ys, v in a4_end:
+        if a4_end_vals and abs(a4_end_vals[-1] - v) < 0.02:
+            continue
+        # skip obvious axis ticks
+        if abs(v - round(v, 1)) < 1e-9 and v in {0.6, 0.8, 1.0, 1.2, 1.4}:
+            continue
+        a4_end_vals.append(v)
+    if len(a4_end_vals) >= 3:
+        add_stock("Figure A-4", "emerging_economies", "2010-12", a4_end_vals[0], f"OCR A-4 end {a4_end_vals}")
+        add_stock("Figure A-4", "united_states", "2010-12", a4_end_vals[1], f"OCR A-4 end {a4_end_vals}")
+        add_stock("Figure A-4", "euro_area", "2010-12", a4_end_vals[2], f"OCR A-4 end {a4_end_vals}")
+
+    # A-4 trough labels near 2009 (mid-x): emerging/US/euro top→bottom; Euro is lowest.
+    a4_trough = sorted(
+        [(ys, v) for xs, ys, v in points if 0.45 <= xs <= 0.70 and 0.40 <= ys <= 0.55 and 0.35 <= v <= 0.75],
+        key=lambda t: t[0],
+    )
+    trough_vals = []
+    for ys, v in a4_trough:
+        if v in {0.6, 0.8}:  # axis ticks
+            continue
+        if trough_vals and abs(trough_vals[-1] - v) < 0.02:
+            continue
+        trough_vals.append(v)
+    if len(trough_vals) >= 3:
+        add_stock("Figure A-4", "emerging_economies", "2009-03", trough_vals[0], f"OCR A-4 trough {trough_vals}")
+        add_stock("Figure A-4", "united_states", "2009-03", trough_vals[1], f"OCR A-4 trough {trough_vals}")
+        add_stock("Figure A-4", "euro_area", "2009-03", trough_vals[2], f"OCR A-4 trough {trough_vals}")
+    elif trough_vals:
+        # Prefer the lowest OCR'd trough label as Euro-area March-2009 value.
+        add_stock(
+            "Figure A-4",
+            "euro_area",
+            "2009-03",
+            min(trough_vals),
+            f"OCR A-4 trough euro={min(trough_vals)} from {trough_vals}",
+        )
+
+
+def enrich_b4_cpi_facts(facts: list[NumericFact], assets, reader) -> None:
+    """OCR Figure B-4 2009 headline/core CPI labels."""
+    meta = None
+    page_img = None
+    for a in assets:
+        if a.label.lower() == "figure b-4" and a.trust_level != "low":
+            page_img = a.image_path
+            meta = a
+            break
+    if not page_img or meta is None:
+        return
+    try:
+        from PIL import Image, ImageEnhance, ImageOps
+        import numpy as np
+    except Exception:
+        return
+
+    img = Image.open(page_img).convert("RGB")
+    w, h = img.size
+    # B-4 is the lower chart on the page render.
+    crop = img.crop((int(0.45 * w), int(0.58 * h), int(0.85 * w), int(0.82 * h)))
+    crop = ImageEnhance.Contrast(ImageOps.grayscale(crop)).enhance(2.5)
+    crop = crop.resize((crop.width * 3, crop.height * 3))
+    vals = []
+    for bbox, text, conf in reader.readtext(np.array(crop), detail=1, paragraph=False):
+        if conf < 0.2:
+            continue
+        ys = sum(pt[1] for pt in bbox) / 4.0
+        for v in _parse_decimal_tokens(str(text)):
+            if -5 <= v <= 5:
+                vals.append((ys, v))
+    # Also accept tokens like -0.4 / 1.7 from full-page OCR near B-4
+    negs = sorted([v for _, v in vals if v < 0])
+    poss = sorted([v for _, v in vals if 0.5 <= v <= 3.0])
+    headline = negs[0] if negs else None
+    core = poss[-1] if poss else None
+    if headline is not None:
+        _add(
+            facts,
+            doc_id=meta.doc_id,
+            page=meta.page,
+            trust_level=meta.trust_level,
+            source_label="Figure B-4",
+            entity="united_states",
+            metric="headline_cpi",
+            year="2009",
+            value=float(headline),
+            value_type="outturn",
+            raw=f"OCR B-4 headline {headline}",
+        )
+    if core is not None:
+        _add(
+            facts,
+            doc_id=meta.doc_id,
+            page=meta.page,
+            trust_level=meta.trust_level,
+            source_label="Figure B-4",
+            entity="united_states",
+            metric="core_cpi",
+            year="2009",
+            value=float(core),
+            value_type="outturn",
+            raw=f"OCR B-4 core {core}",
+        )
+
+
 def ocr_figures(assets, reader) -> list[FigureRecord]:
     records: list[FigureRecord] = []
     for a in assets:
@@ -727,6 +919,8 @@ def build_kb(force: bool = False, do_ocr: bool = True) -> dict:
                 reader = easyocr.Reader(["en"], gpu=False, verbose=False)
             figure_records = ocr_figures(assets, reader)
             enrich_euro_area_bar_facts(facts, assets, reader)
+            enrich_stock_index_facts(facts, assets, reader)
+            enrich_b4_cpi_facts(facts, assets, reader)
         except Exception as e:
             print("OCR skipped:", e)
 
